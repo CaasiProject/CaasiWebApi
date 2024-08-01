@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { logOutUser, loginUser, registerUser } from "../controllers/user.controller.js";
+import { logOutUser, loginUser, registerUser, getUsers, getUserDetails, updateUser, deleteUser, createUser} from "../controllers/user.controller.js";
 import { upload } from "../middleware/nulter.middleware.js"
 import { jwtVerify } from "../middleware/auth.middleware.js";
 
@@ -19,8 +19,13 @@ router.route('/register').post(
     registerUser
 )
 
-router.route('/login').post(loginUser)
-//Secure Route
-router.route('/logout').post(jwtVerify, logOutUser)
+router.post('/register', registerUser);
+router.post('/login', loginUser);
+router.post('/logout', logOutUser);
+router.post('/create', createUser);
+router.get('/list', getUsers);
+router.get('/:id/detail', getUserDetails);
+router.patch('/:id/update', updateUser);
+router.delete('/:id/delete', deleteUser);
 
 export default router
