@@ -249,4 +249,10 @@ const createUser = asyncHandler(async (req, res) => {
     });
 });
 
-export { registerUser, loginUser, logOutUser, getUserDetails, getUsers, updateUser, deleteUser, createUser };
+const getUsersDropdown = asyncHandler(async (req, res) => {
+    const users = await User.find().select('_id userName');
+    res.status(200).json(new ApiResponse(200, users, "Users retrieved successfully"));
+});
+
+
+export { registerUser, loginUser, logOutUser, getUserDetails, getUsers, updateUser, deleteUser, createUser, getUsersDropdown };

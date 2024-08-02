@@ -16,9 +16,11 @@ app.use(cookieParser())
 
 //Import Router
 
-import userRouter from "./routes/user.routes.js"
+import userRouter from "./routes/user.routes.js";
+import expenseRoutes from './routes/expense.routes.js';
 //Route Deceleration
 app.use('/api/v1/users', userRouter)
+app.use(expenseRoutes);
 
 
 

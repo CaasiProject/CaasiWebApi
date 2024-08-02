@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { logOutUser, loginUser, registerUser, getUsers, getUserDetails, updateUser, deleteUser, createUser} from "../controllers/user.controller.js";
+import { logOutUser, loginUser, registerUser, getUsers, getUserDetails, updateUser, deleteUser, createUser, getUsersDropdown} from "../controllers/user.controller.js";
 import { upload } from "../middleware/nulter.middleware.js"
 import { jwtVerify } from "../middleware/auth.middleware.js";
 
@@ -27,5 +27,6 @@ router.get('/list', getUsers);
 router.get('/:id/detail', getUserDetails);
 router.patch('/:id/update', updateUser);
 router.delete('/:id/delete', deleteUser);
+router.get('/users-dropdown', getUsersDropdown);
 
 export default router
