@@ -19,10 +19,13 @@ app.use(cookieParser())
 import userRouter from "./routes/user.routes.js";
 import expenseRoutes from './routes/expense.routes.js';
 import activityRoutes from './routes/activity.routes.js';
+import absenceRoutes from './routes/absence.routes.js';
+
 //Route Deceleration
 app.use('/api/v1/users', userRouter)
 app.use(expenseRoutes);
 app.use('/api/v1/activities', activityRoutes); 
+app.use('/api/v1/absences', absenceRoutes); 
 
 
 
