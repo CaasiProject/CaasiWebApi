@@ -1,6 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
+import { Client } from "../models/client.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import bcrypt from "bcrypt";
@@ -8,11 +9,12 @@ import jwt from "jsonwebtoken";
 
 // Generate Access and Refresh Tokens
 const generateAccessAndRefereshToken = async (userId) => {
+
     try {
-        const user = await User.findById(userId);
+        const user = await Client.findById(userId);
+
         const refreshToken = await user.generateRefreshToken();
         const accessToken = await user.generateAccessToken();
-
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false });
 
@@ -90,7 +92,7 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Email and password are required");
     }
 
-    const user = await User.findOne({
+    const user = await Client.findOne({
         $or: [{ userName }, { email }]
     });
 
@@ -105,7 +107,7 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     const { refreshToken, accessToken } = await generateAccessAndRefereshToken(user._id);
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+    const loggedInUser = await Client.findById(user._id).select("-password -refreshToken");
 
     const options = {
         httpOnly: true,
@@ -201,7 +203,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 // Create User (alternative to register)
 const createUser = asyncHandler(async (req, res) => {
-    const { userName, email, fullName, password, clientId, department, role, status, phoneNumber, createdDate, updatedDate } = req.body;
+    const { userName, email, fullName, firstName, lastName, password, clientId, department, status, phoneNumber, createdDate, updatedDate } = req.body;
 
     // Validate required fields
     if ([userName, email, fullName, password].some((field) => !field.trim())) {
@@ -210,22 +212,23 @@ const createUser = asyncHandler(async (req, res) => {
 
     // Check if the user already exists
     const existingUser = await User.findOne({
-        $or: [{ userName }, { email }]
+        $or: [{ fullName }, { email }]
     });
 
     if (existingUser) {
-        throw new ApiError(409, "User with the provided userName or email already exists");
+        throw new ApiError(409, "User with the provided fullName or email already exists");
     }
 
     // Create new user
     const user = await User.create({
-        userName: userName.toLowerCase(),
+        userName: fullName.toLowerCase(),
         email,
         password,
+        firstName,
         fullName,
+        lastName,
         clientId,
         department,
-        role,
         status,
         phoneNumber,
         createdDate,

@@ -24,6 +24,16 @@ const userSchema = new Schema(
             required: true,
             trim: true,
         },
+        firstName: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        lastName: {
+            type: String,
+            required: true,
+            trim: true,
+        },
         password: {
             type: String,
             required: [true, "Password is Required"]
@@ -32,7 +42,7 @@ const userSchema = new Schema(
             type: String,
         },
         clientId: {
-            type: Number,
+            type: String,
             required: true,
         },
         department: {
@@ -40,11 +50,11 @@ const userSchema = new Schema(
             required: true,
             trim: true,
         },
-        role: {
-            type: String,
-            required: true,
-            trim: true,
-        },
+        // role: {
+        //     type: String,
+        //     required: true,
+        //     trim: true,
+        // },
         status: {
             type: String,
             required: true,

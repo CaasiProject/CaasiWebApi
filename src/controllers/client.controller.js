@@ -1,14 +1,16 @@
 import { Client } from '../models/client.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
+import { v4 as uuidv4 } from 'uuid';
+
 
 // Create a new client
 export const createClient = async (req, res) => {
   try {
-    const { clientId, name, description, mainUser } = req.body;
-
-    if (!clientId || !name || !mainUser) {
-      throw new ApiError(400, 'Client ID, name, and main user are required');
+    const { name, description, email, password } = req.body;
+    let clientId = `client-${uuidv4()}`
+    if (!clientId || !name || !email || !password) {
+      throw new ApiError(400, 'Client ID, name,email, and password are required');
     }
 
     // Check if clientId is already used
@@ -17,7 +19,7 @@ export const createClient = async (req, res) => {
       throw new ApiError(409, 'Client with this ID already exists');
     }
 
-    const client = await Client.create({ clientId, name, description, mainUser });
+    const client = await Client.create({ clientId, name, description, email, password });
 
     res.status(201).json(new ApiResponse(200, client, 'Client created successfully'));
   } catch (error) {
