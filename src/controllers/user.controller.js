@@ -169,12 +169,12 @@ const getUsers = asyncHandler(async (req, res) => {
 // Update User by ID
 const updateUser = asyncHandler(async (req, res) => {
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['userName', 'email', 'fullName', 'password', 'clientId', 'department', 'role', 'status', 'phoneNumber'];
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+    // const allowedUpdates = ['userName', 'email', 'department', 'status', 'phoneNumber'];
+    // const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
-    if (!isValidOperation) {
-        throw new ApiError(400, "Invalid updates!");
-    }
+    // if (!isValidOperation) {
+    //     throw new ApiError(400, "Invalid updates!");
+    // }
 
     const user = await User.findById(req.params.id);
     if (!user) {
