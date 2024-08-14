@@ -1,10 +1,34 @@
 import { Router } from "express";
-import { logOutUser, loginUser, registerUser, getUsers, getUserDetails, updateUser, deleteUser, createUser, getUsersDropdown} from "../controllers/user.controller.js";
+import { logOutUser, loginUser, registerUser, getUsers, getUserDetails, updateUser, deleteUser, createUser, getUsersDropdown } from "../controllers/user.controller.js";
 import { upload } from "../middleware/nulter.middleware.js"
 import { jwtVerify } from "../middleware/auth.middleware.js";
 
 const router = Router()
-
+/**
+ * @openapi
+ * /users/register:
+ *   post:
+ *     summary: Login a user
+ *     description: Logs in a user and returns a token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Unauthorized
+ */
 router.route('/register').post(
     upload.fields([
         {
@@ -18,9 +42,36 @@ router.route('/register').post(
     ]),
     registerUser
 )
-
-router.post('/register', registerUser);
+/**
+ * @openapi
+ * /users/login:
+ *   post:
+ *     summary: Login a user
+ *     description: Logs in a user and returns a token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Unauthorized
+ */
 router.post('/login', loginUser);
+
+
+
+
 router.post('/logout', logOutUser);
 router.post('/create', createUser);
 router.get('/list', getUsers);

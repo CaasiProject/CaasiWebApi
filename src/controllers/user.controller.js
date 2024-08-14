@@ -244,7 +244,8 @@ const createUser = asyncHandler(async (req, res) => {
 
     // Respond with success message and created user data
     res.status(201).json({
-        status: 'success',
+
+        success: true,
         data: {
             user: createdUser
         },
