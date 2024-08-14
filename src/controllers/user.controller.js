@@ -257,5 +257,79 @@ const getUsersDropdown = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, users, "Users retrieved successfully"));
 });
 
+// Reset Password
+const resetPassword = asyncHandler(async (req, res) => {
+    // Hash the token provided by the user to match it with the stored one
+    const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
 
-export { registerUser, loginUser, logOutUser, getUserDetails, getUsers, updateUser, deleteUser, createUser, getUsersDropdown };
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Invalid or expired token");
+    }
+
+    // Update password
+    user.password = await bcrypt.hash(req.body.password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"));
+});
+
+// Forget Password
+const forgetPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        throw new ApiError(400, "Email is required");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new ApiError(404, "User with this email does not exist");
+    }
+
+    // Generate a reset token
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
+
+    await user.save({ validateBeforeSave: false });
+
+    // Send the token via email
+    const resetUrl = `${req.protocol}://${req.get("host")}/api/users/resetPassword/${resetToken}`;
+
+    const message = `You requested a password reset. Please use the following link to reset your password: \n\n ${resetUrl} \n\n If you did not request this, please ignore this email.`;
+
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        await transporter.sendMail({
+            to: user.email,
+            subject: "Password Reset Request",
+            text: message,
+        });
+
+        res.status(200).json(new ApiResponse(200, {}, "Email sent successfully"));
+    } catch (error) {
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save({ validateBeforeSave: false });
+
+        throw new ApiError(500, "Email could not be sent");
+    }
+});
+
+export { registerUser, loginUser, logOutUser, getUserDetails, getUsers, updateUser, deleteUser, createUser, getUsersDropdown, resetPassword, forgetPassword };
