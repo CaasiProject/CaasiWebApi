@@ -72,7 +72,7 @@ router.post('/login', loginUser);
 
 
 
-router.post('/:id/logout', logOutUser);
+router.post('/logout', logOutUser);
 router.post('/create', createUser);
 router.get('/list', getUsers);
 router.get('/:id/detail', getUserDetails);
