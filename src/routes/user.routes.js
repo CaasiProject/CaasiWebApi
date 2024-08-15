@@ -105,79 +105,10 @@ router.route('/register').post(
  */
 router.post('/login', loginUser);
 
-/**
- * @openapi
- * /users/logout:
- *   post:
- *     tags: [User]
- *     summary: Logout a user
- *     description: Logs out the user by clearing tokens.
- *     responses:
- *       200:
- *         description: User logged out successfully
- */
-router.post('/logout', logOutUser);
 
-/**
- * @openapi
- * /users/create:
- *   post:
- *     tags: [User]
- *     summary: Create a new user (alternative to register)
- *     description: Creates a new user entry.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               userName:
- *                 type: string
- *                 example: johndoe
- *               email:
- *                 type: string
- *                 example: user@example.com
- *               fullName:
- *                 type: string
- *                 example: John Doe
- *               firstName:
- *                 type: string
- *                 example: John
- *               lastName:
- *                 type: string
- *                 example: Doe
- *               password:
- *                 type: string
- *                 example: password123
- *               clientId:
- *                 type: string
- *                 example: clientId123
- *               department:
- *                 type: string
- *                 example: IT
- *               status:
- *                 type: string
- *                 example: active
- *               phoneNumber:
- *                 type: string
- *                 example: +123456789
- *               createdDate:
- *                 type: string
- *                 format: date
- *                 example: 2024-08-15
- *               updatedDate:
- *                 type: string
- *                 format: date
- *                 example: 2024-08-15
- *     responses:
- *       201:
- *         description: User created successfully
- *       400:
- *         description: Bad Request
- *       409:
- *         description: Conflict
- */
+
+
+router.post('/:id/logout', logOutUser);
 router.post('/create', createUser);
 
 /**
