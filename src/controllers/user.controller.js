@@ -120,6 +120,7 @@ const loginUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully"));
 });
 
+
 // Logout User
 const logOutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { $set: { refreshToken: undefined } }, { new: true });
