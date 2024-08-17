@@ -96,7 +96,7 @@ router.get('/list', getExpenses);
  *       404:
  *         description: Expense not found
  */
-router.get('/datail/:id', getExpenseDetails);
+router.get('/:id/datail', getExpenseDetails);
 
 /**
  * @openapi

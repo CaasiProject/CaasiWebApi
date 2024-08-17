@@ -31,7 +31,7 @@ const expenseSchema = new Schema(
         status: {
             type: String,
             enum: ['Approved', 'Pending', 'Rejected'],
-            default: 'Pending'
+            default: 'Rejected'
         },
         description: {
             type: String,
