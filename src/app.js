@@ -53,7 +53,7 @@ import clientRoutes from './routes/client.routes.js';
 
 //Route Deceleration
 app.use('/api/v1/users', userRouter)
-app.use(expenseRoutes);
+app.use('/api/v1/expense', expenseRoutes);
 app.use('/api/v1/activities', activityRoutes);
 app.use('/api/v1/absences', absenceRoutes);
 app.use('/api/v1/advanced-settings', advancedSettingsRoutes);

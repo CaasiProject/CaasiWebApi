@@ -202,7 +202,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 // Create User (alternative to register)
 const createUser = asyncHandler(async (req, res) => {
-    const { userName, email, fullName, firstName, lastName, password, clientId, department, status, phoneNumber, createdDate, updatedDate } = req.body;
+    const { userName, email, fullName, firstName, lastName, password, clientId, department, status, phoneNumber, createdDate, updatedDate, role } = req.body;
 
     // Validate required fields
     if ([userName, email, fullName, password].some((field) => !field.trim())) {
@@ -229,6 +229,7 @@ const createUser = asyncHandler(async (req, res) => {
         clientId,
         department,
         status,
+        role,
         phoneNumber,
         createdDate,
         updatedDate
@@ -236,7 +237,6 @@ const createUser = asyncHandler(async (req, res) => {
 
     // Fetch user details excluding sensitive information
     const createdUser = await User.findById(user._id).select("-password");
-
     if (!createdUser) {
         throw new ApiError(500, "User creation failed");
     }

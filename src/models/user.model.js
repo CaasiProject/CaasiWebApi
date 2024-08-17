@@ -50,11 +50,11 @@ const userSchema = new Schema(
             required: true,
             trim: true,
         },
-        // role: {
-        //     type: String,
-        //     required: true,
-        //     trim: true,
-        // },
+        role: {
+            type: String,
+            required: true,
+            trim: true,
+        },
         status: {
             type: String,
             required: true,

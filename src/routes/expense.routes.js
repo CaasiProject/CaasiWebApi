@@ -43,7 +43,7 @@ const router = express.Router();
  *       400:
  *         description: Bad Request
  */
-router.post('/expenses', createExpense);
+router.post('/create', createExpense);
 
 /**
  * @openapi
@@ -74,7 +74,7 @@ router.post('/expenses', createExpense);
  *       200:
  *         description: Expenses retrieved successfully
  */
-router.get('/expenses', getExpenses);
+router.get('/list', getExpenses);
 
 /**
  * @openapi
@@ -96,7 +96,7 @@ router.get('/expenses', getExpenses);
  *       404:
  *         description: Expense not found
  */
-router.get('/expenses/:id', getExpenseDetails);
+router.get('/datail/:id', getExpenseDetails);
 
 /**
  * @openapi
@@ -138,7 +138,7 @@ router.get('/expenses/:id', getExpenseDetails);
  *       404:
  *         description: Expense not found
  */
-router.patch('/expenses/:id', updateExpense);
+router.patch('/update/:id', updateExpense);
 
 /**
  * @openapi

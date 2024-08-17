@@ -31,7 +31,6 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-console.log(JSON.stringify(swaggerSpec, null, 2));
 export default function SwaggerDocs(app) {
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     console.log('Docs are available at http://localhost:6060')
