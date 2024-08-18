@@ -7,8 +7,10 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const createExpense = asyncHandler(async (req, res) => {
     const { clientId, userId, userName, amount, description, dateOfSubmitted, status, category, attachment, scan } = req.body;
 
+    // Check if any of the required fields are missing or invalid
     if (
-        [clientId, userId, userName, amount, description, dateOfSubmitted, category].some((field) => field?.trim() === "")
+        [clientId, userId, userName, description, category].some((field) => typeof field === 'string' && field.trim() === "") ||
+        [amount, dateOfSubmitted].some((field) => field === undefined || field === null)
     ) {
         throw new ApiError(400, "All fields are required!");
     }
