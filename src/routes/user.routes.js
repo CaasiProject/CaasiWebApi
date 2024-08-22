@@ -64,6 +64,17 @@ const router = Router();
  *     responses:
  *       201:
  *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad Request
  *       409:
@@ -100,15 +111,24 @@ router.route('/register').post(
  *     responses:
  *       200:
  *         description: User logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 token:
+ *                   type: string
+ *                   example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
  *       401:
  *         description: Unauthorized
  */
 router.post('/login', loginUser);
 
+router.post('/logout', jwtVerify, logOutUser);
 
-
-
-router.post('/:id/logout', logOutUser);
 router.post('/create', createUser);
 
 /**
@@ -142,6 +162,18 @@ router.post('/create', createUser);
  *     responses:
  *       200:
  *         description: Users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
  */
 router.get('/list', getUsers);
 
@@ -162,6 +194,16 @@ router.get('/list', getUsers);
  *     responses:
  *       200:
  *         description: User details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
  */
@@ -209,6 +251,16 @@ router.get('/:id/detail', getUserDetails);
  *     responses:
  *       200:
  *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
  */
@@ -231,6 +283,17 @@ router.patch('/:id/update', updateUser);
  *     responses:
  *       200:
  *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: 'User deleted successfully'
  *       404:
  *         description: User not found
  */
@@ -246,6 +309,18 @@ router.delete('/:id/delete', deleteUser);
  *     responses:
  *       200:
  *         description: Users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
  */
 router.get('/users-dropdown', getUsersDropdown);
 
@@ -269,43 +344,58 @@ router.get('/users-dropdown', getUsersDropdown);
  *     responses:
  *       200:
  *         description: Password reset email sent
- *       400:
- *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: 'Password reset email sent'
+ *       404:
+ *         description: User not found
  */
 router.post('/forget-password', forgetPassword);
 
-/**
- * @openapi
- * /users/reset-password/{token}:
- *   put:
- *     tags: [User]
- *     summary: Reset password
- *     description: Resets the user password using a token.
- *     parameters:
- *       - in: path
- *         name: token
- *         schema:
- *           type: string
- *         required: true
- *         description: Password reset token
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               password:
- *                 type: string
- *                 example: newpassword123
- *     responses:
- *       200:
- *         description: Password reset successfully
- *       400:
- *         description: Bad Request
- *       404:
- *         description: Token not found
- */
-router.put('/reset-password/:token', resetPassword);
+router.patch('/resetPassword', resetPassword);
+
+// /**
+//  * @openapi
+//  * /users/reset-password:
+//  *   post:
+//  *     tags: [User]
+//  *     summary: Reset password
+//  *     description: Resets the user's password.
+//  *     requestBody:
+//  *       required: true
+//  *       content:
+//  *         application/json:
+//  *           schema:
+//  *             type: object
+//  *             properties:
+//  *               password:
+//  *                 type: string
+//  *                 example: newpassword123
+//  *     responses:
+//  *       200:
+//  *         description: Password reset successfully
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               type: object
+//  *               properties:
+//  *                 success:
+//  *                   type: boolean
+//  *                   example: true
+//  *                 message:
+//  *                   type: string
+//  *                   example: 'Password reset successfully'
+//  *       404:
+//  *         description: User not found
+//  */
+// router.post('/reset-password', resetPassword);
 
 export default router;
