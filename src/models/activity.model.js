@@ -1,9 +1,25 @@
 import mongoose, { Schema } from 'mongoose';
 
+// Define a schema for the individual day details
+const daySchema = new Schema({
+    date: {
+        type: String,
+        required: true,
+    },
+    dayType: {
+        type: String,
+        required: true,
+    },
+    workType: {
+        type: String,
+        required: true,
+    },
+});
+
 const activitySchema = new Schema(
     {
         clientId: {
-            type: Number,
+            type: String,
             required: true,
         },
         userId: {
@@ -84,8 +100,8 @@ const activitySchema = new Schema(
         },
         workTypes: {
             type: String,
-            enum: ['abcent', 'halfDay', 'leave', 'travel', 'atOffice', 'remoteWork'],
         },
+        days: [daySchema],
     },
     {
         timestamps: true,

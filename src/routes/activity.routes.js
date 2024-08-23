@@ -36,7 +36,7 @@ const router = express.Router();
  *       400:
  *         description: Bad Request
  */
-router.post('/', createActivity);
+router.post('/create', createActivity);
 
 /**
  * @openapi
@@ -73,7 +73,7 @@ router.post('/', createActivity);
  *       404:
  *         description: Activity not found
  */
-router.patch('/:id', updateActivity);
+router.patch('/update/:id', updateActivity);
 
 /**
  * @openapi
@@ -88,7 +88,7 @@ router.patch('/:id', updateActivity);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', listActivities);
+router.get('/list', listActivities);
 
 /**
  * @openapi
@@ -110,7 +110,7 @@ router.get('/', listActivities);
  *       404:
  *         description: Activity not found
  */
-router.get('/:id', getActivityDetail);
+router.get('/:id/detail', getActivityDetail);
 
 /**
  * @openapi
@@ -132,6 +132,6 @@ router.get('/:id', getActivityDetail);
  *       404:
  *         description: Activity not found
  */
-router.delete('/:id', deleteActivity);
+router.delete('/:id/delete', deleteActivity);
 
 export default router;

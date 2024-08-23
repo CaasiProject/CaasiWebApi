@@ -21,8 +21,11 @@ const updateActivity = asyncHandler(async (req, res) => {
 
 // List Activities with Filters
 const listActivities = asyncHandler(async (req, res) => {
-    const { name, department, status, role, workType } = req.query;
+    const { name, department, status, role, workType, userId } = req.query;
     const filter = {};
+    if (userId) {
+        filter.userId = userId;
+    }
     if (name) filter.name = new RegExp(name, 'i');
     if (department) filter.department = department;
     if (status) filter.status = status;
