@@ -131,8 +131,8 @@ const loginUser = asyncHandler(async (req, res) => {
 // Logout User or Client
 const logOutUser = asyncHandler(async (req, res) => {
     // console.log('Logging out user:', req.user._id); // Debugging
-    let { id } = req.body
-    await User.findByIdAndUpdate(id, { $set: { refreshToken: undefined } }, { new: true });
+    // let { id } = req.body
+    // await User.findByIdAndUpdate(id, { $set: { refreshToken: undefined } }, { new: true });
     if (!req.user || !req.user._id) {
         return res.status(400).json(new ApiResponse(400, {}, "User not authenticated"));
     }
