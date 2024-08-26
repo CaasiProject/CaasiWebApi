@@ -3,6 +3,7 @@ import { logOutUser, loginUser, registerUser, getUsers, getUserDetails, updateUs
 import { upload } from '../middleware/nulter.middleware.js';
 import { jwtVerify } from '../middleware/auth.middleware.js';
 
+
 const router = Router();
 
 /**
@@ -105,10 +106,8 @@ router.route('/register').post(
  */
 router.post('/login', loginUser);
 
+router.post('/logout', logOutUser);
 
-
-
-router.post('/:id/logout', logOutUser);
 router.post('/create', createUser);
 
 /**
