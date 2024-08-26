@@ -96,5 +96,22 @@ const deleteExpense = asyncHandler(async (req, res) => {
     }
     res.status(200).json(new ApiResponse(200, expense, "Expense deleted successfully"));
 });
+// Update expense status by ID
+const updateExpenseStatus = asyncHandler(async (req, res) => {
+    const { status } = req.body;
 
-export { createExpense, getExpenseDetails, getExpenses, updateExpense, deleteExpense };
+    if (!status) {
+        throw new ApiError(400, "Status is required");
+    }
+
+    const expense = await Expense.findById(req.params.id);
+    if (!expense) {
+        throw new ApiError(404, "Expense not found");
+    }
+
+    expense.status = status;
+    await expense.save();
+    
+    res.status(200).json(new ApiResponse(200, expense, "Expense status updated successfully"));
+});
+export { createExpense, getExpenseDetails, getExpenses, updateExpense, deleteExpense,updateExpenseStatus };

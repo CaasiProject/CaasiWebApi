@@ -9,9 +9,12 @@ import jwt from "jsonwebtoken";
 
 // Generate Access and Refresh Tokens
 const generateAccessAndRefereshToken = async (userId) => {
-
     try {
-        const user = await Client.findById(userId);
+        const user = await Client.findById(userId) || await User.findById(userId);
+
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
 
         const refreshToken = await user.generateRefreshToken();
         const accessToken = await user.generateAccessToken();
@@ -84,46 +87,68 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(201).json(new ApiResponse(200, createdUser, "User registered successfully"));
 });
 
-// Login User
+// Login User or Client
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
-    if (!email && !password) {
+    if (!email || !password) {
         throw new ApiError(400, "Email and password are required");
     }
 
-    const user = await Client.findOne({ email });
+    // Find user or client with the given email
+    let userOrClient = await User.findOne({ email });
 
-    if (!user) {
-        return res.status(404).json(new ApiResponse(404, {}, "User does not exist"));
+    if (!userOrClient) {
+        userOrClient = await Client.findOne({ email });
     }
 
-    const isPasswordValid = await user.isPasswordCorrect(password);
+    if (!userOrClient) {
+        throw new ApiError(404, "User or Client with this email does not exist");
+    }
+
+    // Compare the provided password with the hashed password
+    const isPasswordValid = await bcrypt.compare(password, userOrClient.password);
 
     if (!isPasswordValid) {
-        return res.status(401).json(new ApiResponse(401, {}, "Invalid credentials"));
+        throw new ApiError(401, "Invalid credentials");
     }
 
-    const { refreshToken, accessToken } = await generateAccessAndRefereshToken(user._id);
-    const loggedInUser = await Client.findById(user._id).select("-password -refreshToken");
+    // Generate tokens and respond
+    const { refreshToken, accessToken } = await generateAccessAndRefereshToken(userOrClient._id);
 
     const options = {
         httpOnly: true,
         secure: true
     };
 
-    return res.status(200)
+    res.status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully"));
+        .json(new ApiResponse(200, { user: userOrClient, accessToken, refreshToken }, "User logged in successfully"));
 });
 
 
-// Logout User
+// Logout User or Client
 const logOutUser = asyncHandler(async (req, res) => {
     // console.log('Logging out user:', req.user._id); // Debugging
     let { id } = req.body
     await User.findByIdAndUpdate(id, { $set: { refreshToken: undefined } }, { new: true });
+    if (!req.user || !req.user._id) {
+        return res.status(400).json(new ApiResponse(400, {}, "User not authenticated"));
+    }
+
+    const userId = req.user._id;
+
+    // Attempt to find and update the refreshToken in both Client and User models
+    let user = await Client.findByIdAndUpdate(userId, { $set: { refreshToken: undefined } }, { new: true });
+
+    if (!user) {
+        user = await User.findByIdAndUpdate(userId, { $set: { refreshToken: undefined } }, { new: true });
+    }
+
+    if (!user) {
+        return res.status(404).json(new ApiResponse(404, {}, "User or Client not found"));
+    }
 
     const options = {
         httpOnly: true,
@@ -135,6 +160,7 @@ const logOutUser = asyncHandler(async (req, res) => {
         .clearCookie("refreshToken", options)
         .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
+
 
 // Get User Details by ID
 const getUserDetails = asyncHandler(async (req, res) => {
@@ -261,27 +287,61 @@ const getUsersDropdown = asyncHandler(async (req, res) => {
 
 // Reset Password
 const resetPassword = asyncHandler(async (req, res) => {
-    // Hash the token provided by the user to match it with the stored one
-    const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    const { email, newPassword } = req.body;
 
-    const user = await User.findOne({
-        resetPasswordToken,
-        resetPasswordExpire: { $gt: Date.now() },
-    });
-
-    if (!user) {
-        throw new ApiError(400, "Invalid or expired token");
+    if (!email || !newPassword) {
+        throw new ApiError(400, "Email and new password are required");
     }
 
-    // Update password
-    user.password = await bcrypt.hash(req.body.password, 10);
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
+    // Find user or client with the given email
+    let userOrClient = await User.findOne({ email });
 
-    await user.save();
+    if (!userOrClient) {
+        userOrClient = await Client.findOne({ email });
+    }
 
-    res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"));
+    if (!userOrClient) {
+        throw new ApiError(404, "User or Client with this email does not exist");
+    }
+
+    // Hash and update the new password
+    // const hashedPassword = await bcrypt.hash(newPassword, 10);
+    userOrClient.password = newPassword;
+    userOrClient.resetPasswordToken = undefined; // Clear any existing reset token if necessary
+    userOrClient.resetPasswordExpire = undefined; // Clear any existing reset expiry if necessary
+    await userOrClient.save();
+
+    res.status(200).json(new ApiResponse(200, {}, "Password updated successfully"));
 });
+// const resetPassword = asyncHandler(async (req, res) => {
+//     const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+
+//     // Attempt to find user or client with the reset token
+//     let userOrClient = await User.findOne({
+//         resetPasswordToken,
+//         resetPasswordExpire: { $gt: Date.now() },
+//     });
+
+//     if (!userOrClient) {
+//         userOrClient = await Client.findOne({
+//             resetPasswordToken,
+//             resetPasswordExpire: { $gt: Date.now() },
+//         });
+//     }
+
+//     if (!userOrClient) {
+//         throw new ApiError(400, "Invalid or expired token");
+//     }
+
+//     // Update password
+//     userOrClient.password = await bcrypt.hash(req.body.password, 10);
+//     userOrClient.resetPasswordToken = undefined;
+//     userOrClient.resetPasswordExpire = undefined;
+
+//     await userOrClient.save();
+
+//     res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"));
+// });
 
 // Forget Password
 const forgetPassword = asyncHandler(async (req, res) => {
@@ -291,18 +351,23 @@ const forgetPassword = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Email is required");
     }
 
-    const user = await User.findOne({ email });
+    // Attempt to find user or client with the given email
+    let userOrClient = await User.findOne({ email });
 
-    if (!user) {
-        throw new ApiError(404, "User with this email does not exist");
+    if (!userOrClient) {
+        userOrClient = await Client.findOne({ email });
+    }
+
+    if (!userOrClient) {
+        throw new ApiError(404, "User or Client with this email does not exist");
     }
 
     // Generate a reset token
     const resetToken = crypto.randomBytes(20).toString("hex");
-    user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
+    userOrClient.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    userOrClient.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
 
-    await user.save({ validateBeforeSave: false });
+    await userOrClient.save({ validateBeforeSave: false });
 
     // Send the token via email
     const resetUrl = `${req.protocol}://${req.get("host")}/api/users/resetPassword/${resetToken}`;
@@ -319,16 +384,16 @@ const forgetPassword = asyncHandler(async (req, res) => {
         });
 
         await transporter.sendMail({
-            to: user.email,
+            to: userOrClient.email,
             subject: "Password Reset Request",
             text: message,
         });
 
         res.status(200).json(new ApiResponse(200, {}, "Email sent successfully"));
     } catch (error) {
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpire = undefined;
-        await user.save({ validateBeforeSave: false });
+        userOrClient.resetPasswordToken = undefined;
+        userOrClient.resetPasswordExpire = undefined;
+        await userOrClient.save({ validateBeforeSave: false });
 
         throw new ApiError(500, "Email could not be sent");
     }
