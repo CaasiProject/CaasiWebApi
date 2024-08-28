@@ -57,16 +57,21 @@ const deleteActivity = asyncHandler(async (req, res) => {
 });
 
 const getUserActivityDetails = asyncHandler(async (req, res) => {
-    const { userId, month } = req.body;
+    const { userId, month, year } = req.query;
     
-    // Use the provided month or default to the current month
-    const selectedMonth = month || new Date().getMonth() + 1;
+    // Parse month and year as integers
+    const selectedMonth = parseInt(month, 10) || new Date().getMonth() + 1;
+    const selectedYear = parseInt(year, 10) || new Date().getFullYear();
+
+    // Calculate the start and end dates
+    const startDate = new Date(selectedYear, selectedMonth - 1, 1);
+    const endDate = new Date(selectedYear, selectedMonth, 1);
 
     const activities = await Activity.find({
         userId: userId,
         createdDate: {
-            $gte: new Date(new Date().getFullYear(), selectedMonth - 1, 1),
-            $lt: new Date(new Date().getFullYear(), selectedMonth, 1)
+            $gte: startDate,
+            $lt: endDate
         }
     });
 
@@ -76,5 +81,8 @@ const getUserActivityDetails = asyncHandler(async (req, res) => {
 
     res.status(200).json(new ApiResponse(200, activities, "Activity details retrieved successfully"));
 });
+
+
+
 
 export { createActivity, updateActivity, listActivities, getActivityDetail, deleteActivity, getUserActivityDetails };

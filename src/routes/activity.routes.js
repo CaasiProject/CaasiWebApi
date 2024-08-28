@@ -134,6 +134,6 @@ router.get('/:id/detail', getActivityDetail);
  */
 router.delete('/:id/delete', deleteActivity);
 
-router.get('/:id/useriddatail', getUserActivityDetails);
+router.get('/datail', getUserActivityDetails);
 
 export default router;
