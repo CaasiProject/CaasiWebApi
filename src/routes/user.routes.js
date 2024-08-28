@@ -3,6 +3,7 @@ import { logOutUser, loginUser, registerUser, getUsers, getUserDetails, updateUs
 import { upload } from '../middleware/nulter.middleware.js';
 import { jwtVerify } from '../middleware/auth.middleware.js';
 
+
 const router = Router();
 
 /**
