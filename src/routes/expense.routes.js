@@ -1,5 +1,5 @@
 import express from 'express';
-import { createExpense, getExpenseDetails, getExpenses, updateExpense, deleteExpense,updateExpenseStatus } from '../controllers/expense.controller.js';
+import { createExpense, getExpenseDetails, getExpenses, updateExpense, deleteExpense,updateExpenseStatus, getUserExpenseDetails } from '../controllers/expense.controller.js';
 
 const router = express.Router();
 
@@ -163,4 +163,6 @@ router.patch('/update/:id', updateExpense);
 router.delete('/expenses/:id', deleteExpense);
 
 router.post('/:id/status', updateExpenseStatus);
+
+router.get('/:id/useriddatail', getUserExpenseDetails);
 export default router;

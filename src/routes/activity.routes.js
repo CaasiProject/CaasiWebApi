@@ -1,5 +1,5 @@
 import express from 'express';
-import { createActivity, updateActivity, listActivities, getActivityDetail, deleteActivity } from '../controllers/activity.controller.js';
+import { createActivity, updateActivity, listActivities, getActivityDetail, deleteActivity, getUserActivityDetails } from '../controllers/activity.controller.js';
 
 const router = express.Router();
 
@@ -133,5 +133,7 @@ router.get('/:id/detail', getActivityDetail);
  *         description: Activity not found
  */
 router.delete('/:id/delete', deleteActivity);
+
+router.get('/:id/useriddatail', getUserActivityDetails);
 
 export default router;

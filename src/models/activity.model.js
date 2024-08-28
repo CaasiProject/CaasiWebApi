@@ -4,15 +4,12 @@ import mongoose, { Schema } from 'mongoose';
 const daySchema = new Schema({
     date: {
         type: String,
-        required: true,
     },
     dayType: {
         type: String,
-        required: true,
     },
     workType: {
         type: String,
-        required: true,
     },
 });
 

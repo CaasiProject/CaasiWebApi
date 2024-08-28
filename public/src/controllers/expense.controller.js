@@ -95,4 +95,24 @@ const deleteExpense = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, expense, "Expense deleted successfully"));
 });
 
-export { createExpense, getExpenseDetails, getExpenses, updateExpense, deleteExpense };
+const getUserExpenseDetails = asyncHandler(async (req, res) => {
+    const { userId } = req.query;
+    const currentMonth = new Date().getMonth() + 1;
+
+    const expenses = await Expense.find({
+        userId: userId,
+        dateOfSubmitted: {
+            $gte: new Date(new Date().getFullYear(), currentMonth - 1, 1),
+            $lt: new Date(new Date().getFullYear(), currentMonth, 1)
+        }
+    });
+
+    if (!expenses || expenses.length === 0) {
+        throw new ApiError(404, "No expenses found for the given user and month");
+    }
+
+    res.status(200).json(new ApiResponse(200, expenses, "Expense details retrieved successfully"));
+});
+
+
+export { createExpense, getExpenseDetails, getExpenses, updateExpense, deleteExpense, getUserExpenseDetails };
