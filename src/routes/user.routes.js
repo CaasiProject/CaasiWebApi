@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { logOutUser, loginUser, registerUser, getUsers, getUserDetails, updateUser, deleteUser, createUser, getUsersDropdown, forgetPassword, resetPassword } from '../controllers/user.controller.js';
+import { logOutUser, loginUser, registerUser, getUsers, getUserDetails, updateUser, deleteUser, createUser, getUsersDropdown, forgetPassword, resetPassword, generateAndSendResetToken } from '../controllers/user.controller.js';
 import { upload } from '../middleware/nulter.middleware.js';
 import { jwtVerify } from '../middleware/auth.middleware.js';
 
@@ -362,6 +362,8 @@ router.get('/users-dropdown', getUsersDropdown);
 router.post('/forget-password', forgetPassword);
 
 router.patch('/resetPassword', resetPassword);
+
+router.post('/forget', generateAndSendResetToken);
 
 // /**
 //  * @openapi

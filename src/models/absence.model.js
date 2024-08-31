@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const absenceSchema = new Schema(
     {
         clientId: {
-            type: Number,
+            type: String,
             required: true
         },
         userId: {
@@ -12,26 +12,26 @@ const absenceSchema = new Schema(
         },
         name: {
             type: String,
-            required: true,
+            // required: true,
             trim: true
         },
         contact: {
             type: String,
-            required: true,
+            // required: true,
             trim: true
         },
         email: {
             type: String,
-            required: true,
+            // required: true,
             trim: true
         },
         phone: {
             type: String,
-            required: true,
+            // required: true,
             trim: true
         },
         dayOfAbsence: {
-            type: Date,
+            type: String,
             required: true
         },
         status: {
@@ -41,7 +41,7 @@ const absenceSchema = new Schema(
         },
         userName: {
             type: String,
-            required: true,
+            // required: true,
             trim: true
         },
         startDate: {

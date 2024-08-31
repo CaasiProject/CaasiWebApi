@@ -44,7 +44,7 @@ const router = express.Router();
  *       400:
  *         description: Bad Request
  */
-router.post('/', createAbsence);
+router.post('/create', createAbsence);
 
 /**
  * @openapi
@@ -86,7 +86,7 @@ router.post('/', createAbsence);
  *       404:
  *         description: Absence not found
  */
-router.patch('/:id', updateAbsence);
+router.patch('/:id/update', updateAbsence);
 
 /**
  * @openapi
@@ -101,7 +101,7 @@ router.patch('/:id', updateAbsence);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', listAbsences);
+router.get('/list', listAbsences);
 
 /**
  * @openapi
@@ -123,7 +123,7 @@ router.get('/', listAbsences);
  *       404:
  *         description: Absence not found
  */
-router.get('/:id', getAbsenceDetail);
+router.get('/:id/detail', getAbsenceDetail);
 
 /**
  * @openapi
@@ -145,6 +145,6 @@ router.get('/:id', getAbsenceDetail);
  *       404:
  *         description: Absence not found
  */
-router.delete('/:id', deleteAbsence);
+router.delete('/:id/delete', deleteAbsence);
 
 export default router;

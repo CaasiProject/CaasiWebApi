@@ -56,4 +56,33 @@ const deleteActivity = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, {}, "Activity deleted successfully"));
 });
 
-export { createActivity, updateActivity, listActivities, getActivityDetail, deleteActivity };
+const getUserActivityDetails = asyncHandler(async (req, res) => {
+    const { userId, month, year } = req.query;
+    
+    // Parse month and year as integers
+    const selectedMonth = parseInt(month, 10) || new Date().getMonth() + 1;
+    const selectedYear = parseInt(year, 10) || new Date().getFullYear();
+
+    // Calculate the start and end dates
+    const startDate = new Date(selectedYear, selectedMonth - 1, 1);
+    const endDate = new Date(selectedYear, selectedMonth, 1);
+
+    const activities = await Activity.find({
+        userId: userId,
+        createdDate: {
+            $gte: startDate,
+            $lt: endDate
+        }
+    });
+
+    if (!activities || activities.length === 0) {
+        throw new ApiError(404, "No activities found for the given user and month");
+    }
+
+    res.status(200).json(new ApiResponse(200, activities, "Activity details retrieved successfully"));
+});
+
+
+
+
+export { createActivity, updateActivity, listActivities, getActivityDetail, deleteActivity, getUserActivityDetails };

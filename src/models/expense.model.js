@@ -53,6 +53,14 @@ const expenseSchema = new Schema(
         scan: {
             type: String,
             trim: true
+        },
+        reason: {
+            type: String,
+            trim: true
+        },
+        reply: {
+            type: String,
+            trim: true 
         }
     },
     {
