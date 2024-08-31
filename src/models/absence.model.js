@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const absenceSchema = new Schema(
     {
         clientId: {
-            type: Number,
+            type: String,
             required: true
         },
         userId: {

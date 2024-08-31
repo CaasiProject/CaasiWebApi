@@ -369,21 +369,23 @@ const forgetPassword = asyncHandler(async (req, res) => {
 
     await userOrClient.save({ validateBeforeSave: false });
 
-    // Send the token via email
+    // Send the token via email using Mailgun
     const resetUrl = `${req.protocol}://${req.get("host")}/api/users/resetPassword/${resetToken}`;
 
     const message = `You requested a password reset. Please use the following link to reset your password: \n\n ${resetUrl} \n\n If you did not request this, please ignore this email.`;
 
     try {
         const transporter = nodemailer.createTransport({
-            service: 'Gmail',
+            host: "smtp.mailgun.org",
+            port: 587,
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
+                user: "postmaster@sandbox246563b5618d4756a9fba7147deba139.mailgun.org",
+                pass: "4b6a1de630e3045319fc5601a3352540-777a617d-16f6e11e"
             }
         });
 
         await transporter.sendMail({
+            from: '"Your App Name" <postmaster@sandbox246563b5618d4756a9fba7147deba139.mailgun.org>',
             to: userOrClient.email,
             subject: "Password Reset Request",
             text: message,
@@ -428,6 +430,7 @@ const validateResetToken = asyncHandler(async (req, res) => {
     // Return the user or client's ID
     res.status(200).json(new ApiResponse(200, { userId: userOrClient._id }, "Token is valid"));
 });
+
 const generateAndSendResetToken = asyncHandler(async (req, res) => {
     const { email, redirectUrl } = req.body;
 
@@ -447,8 +450,8 @@ const generateAndSendResetToken = asyncHandler(async (req, res) => {
     }
 
     // Generate a reset token
-    const resetToken = crypto.randomBytes(20).toString("hex");
-    userOrClient.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+     const resetToken = await generateAccessAndRefereshToken(userOrClient._id);
+    userOrClient.resetPasswordToken = resetToken;
     userOrClient.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
 
     await userOrClient.save({ validateBeforeSave: false });
@@ -458,35 +461,35 @@ const generateAndSendResetToken = asyncHandler(async (req, res) => {
 
     const message = `You requested a password reset. Please use the following link to reset your password: \n\n ${resetUrl} \n\n If you did not request this, please ignore this email.`;
 
-    const params = {
-        Source: 'achkef.caasi@gmail.com',
-        Destination: {
-            ToAddresses: [userOrClient.email]
-        },
-        Message: {
-            Subject: {
-                Data: 'Password Reset Request'
-            },
-            Body: {
-                Text: {
-                    Data: message
-                }
-            }
-        }
-    };
-
     try {
-        const ses = new AWS.SES();
-        await ses.sendEmail(params).promise();
-
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            auth: {
+                user: "qaimpetussys@gmail.com",
+                pass: "ncmpmfosxowbmczu" // Make sure this is an App Password if 2-Step Verification is enabled
+            }
+        });
+    
+        await transporter.sendMail({
+            from: '"caasi" <qaimpetussys@gmail.com>',
+            to: userOrClient.email,
+            subject: "Password Reset Request",
+            text: message,
+        });
+    
         res.status(200).json(new ApiResponse(200, {}, "Email sent successfully"));
     } catch (error) {
+        console.error("Error sending email:", error); // Log the actual error
+    
+        // Reset the token and expiration if email sending fails
         userOrClient.resetPasswordToken = undefined;
         userOrClient.resetPasswordExpire = undefined;
         await userOrClient.save({ validateBeforeSave: false });
-
+    
         throw new ApiError(500, "Email could not be sent");
     }
+    
 });
 
 const UserresetPassword = asyncHandler(async (req, res) => {
@@ -522,4 +525,4 @@ const UserresetPassword = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"));
 });
 
-export { registerUser, loginUser, logOutUser, getUserDetails, getUsers, updateUser, deleteUser, createUser, getUsersDropdown, resetPassword, forgetPassword };
+export { registerUser, loginUser, logOutUser, getUserDetails, getUsers, updateUser, deleteUser, createUser, getUsersDropdown, resetPassword, forgetPassword, generateAndSendResetToken};

@@ -21,18 +21,22 @@ const updateAbsence = asyncHandler(async (req, res) => {
 
 // List Absences with Filters
 const listAbsences = asyncHandler(async (req, res) => {
-    const { name, status, userName, startDate, endDate } = req.query;
+    const { name, status, userName, startDate, endDate, clientId, userId } = req.query;
     const filter = {};
+
     if (name) filter.name = new RegExp(name, 'i');
     if (status) filter.status = status;
     if (userName) filter.userName = new RegExp(userName, 'i');
     if (startDate && endDate) {
         filter.dayOfAbsence = { $gte: new Date(startDate), $lte: new Date(endDate) };
     }
+    if (clientId) filter.clientId = clientId;
+    if (userId) filter.userId = userId;
 
     const absences = await Absence.find(filter);
     res.status(200).json(new ApiResponse(200, absences, "Absences retrieved successfully"));
 });
+
 
 // Get Absence Detail
 const getAbsenceDetail = asyncHandler(async (req, res) => {
