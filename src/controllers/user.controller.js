@@ -281,7 +281,7 @@ const createUser = asyncHandler(async (req, res) => {
 });
 
 const getUsersDropdown = asyncHandler(async (req, res) => {
-    const users = await User.find().select('_id userName');
+    const users = await User.find().select('_id lastName firstName phoneNumber email');
     res.status(200).json(new ApiResponse(200, users, "Users retrieved successfully"));
 });
 
