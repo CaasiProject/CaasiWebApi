@@ -31,7 +31,7 @@ const absenceSchema = new Schema(
             trim: true
         },
         dayOfAbsence: {
-            type: Date,
+            type: String,
             required: true
         },
         status: {
