@@ -15,6 +15,11 @@ const absenceSchema = new Schema(
             // required: true,
             trim: true
         },
+        lastName: {
+            type: String,
+            // required: true,
+            trim: true
+        },
         contact: {
             type: String,
             // required: true,

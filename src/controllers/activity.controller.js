@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Activity } from "../models/activity.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Client } from "../models/client.model.js";
 
 // Create Activity
 const createActivity = asyncHandler(async (req, res) => {
@@ -58,29 +59,43 @@ const deleteActivity = asyncHandler(async (req, res) => {
 
 const getUserActivityDetails = asyncHandler(async (req, res) => {
     const { userId, month, year } = req.query;
-    
-    // Parse month and year as integers
+    // Parse month and year as integers, or use the current month/year as default
     const selectedMonth = parseInt(month, 10) || new Date().getMonth() + 1;
     const selectedYear = parseInt(year, 10) || new Date().getFullYear();
 
-    // Calculate the start and end dates
+    // Calculate the start date as the first day of the selected month
     const startDate = new Date(selectedYear, selectedMonth - 1, 1);
-    const endDate = new Date(selectedYear, selectedMonth, 1);
 
-    const activities = await Activity.find({
-        userId: userId,
-        createdDate: {
-            $gte: startDate,
-            $lt: endDate
-        }
-    });
-
-    if (!activities || activities.length === 0) {
-        throw new ApiError(404, "No activities found for the given user and month");
+    // Calculate the end date as the last day of the selected month
+    const endDate = new Date(selectedYear, selectedMonth, 0);
+    // Check if the requester is an admin
+    const isAdmin = await Client.findById({ _id: userId });
+    let activities = []
+    if (isAdmin) {
+        // If the requester is an admin, return all activities
+        activities = await Activity.find({});
+        return res.status(200).json(new ApiResponse(200, activities, "All activities retrieved successfully"));
+    } else {
+        // Fetch activities for the user within the date range
+        activities = await Activity.find({
+            _id: userId,
+            createdDate: {
+                $gte: startDate,
+                $lt: endDate
+            }
+        });
+        // Return the activities for the specific user
+        res.status(200).json(new ApiResponse(200, activities, "Activity details retrieved successfully"));
     }
 
-    res.status(200).json(new ApiResponse(200, activities, "Activity details retrieved successfully"));
+    // Handle case where no activities are found for the user
+    if (!activities || activities.length === 0) {
+        return res.status(200).json(new ApiResponse(200, [], "No activities found for the given user and month"));
+    }
+
+
 });
+
 
 
 
