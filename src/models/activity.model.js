@@ -34,10 +34,15 @@ const activitySchema = new Schema(
             required: true,
             trim: true,
         },
-        contactNumber: {
+        contact: {
             type: String,
-            required: true,
-            trim: true,
+            // required: true,
+            trim: true
+        },
+        phone: {
+            type: String,
+            // required: true,
+            trim: true
         },
         email: {
             type: String,

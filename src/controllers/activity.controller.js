@@ -73,7 +73,7 @@ const getUserActivityDetails = asyncHandler(async (req, res) => {
     let activities = []
     if (isAdmin) {
         // If the requester is an admin, return all activities
-        activities = await Activity.find({});
+        activities = await Activity.find({}).select('_id name surname createdDate ');
         return res.status(200).json(new ApiResponse(200, activities, "All activities retrieved successfully"));
     } else {
         // Fetch activities for the user within the date range
@@ -83,7 +83,7 @@ const getUserActivityDetails = asyncHandler(async (req, res) => {
                 $gte: startDate,
                 $lt: endDate
             }
-        });
+        }).select('_id surname name createdDate ');
         // Return the activities for the specific user
         res.status(200).json(new ApiResponse(200, activities, "Activity details retrieved successfully"));
     }
