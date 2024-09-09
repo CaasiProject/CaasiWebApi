@@ -42,7 +42,7 @@ const router = express.Router();
  *       400:
  *         description: Bad Request
  */
-router.post('/', createAdvancedSettings);
+router.post('/create', createAdvancedSettings);
 
 /**
  * @openapi

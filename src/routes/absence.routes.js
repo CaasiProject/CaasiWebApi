@@ -1,5 +1,5 @@
 import express from 'express';
-import { createAbsence, updateAbsence, listAbsences, getAbsenceDetail, deleteAbsence } from '../controllers/absence.controller.js';
+import { createAbsence, updateAbsence, listAbsences, getAbsenceDetail, deleteAbsence, getAbsenceListByMonth } from '../controllers/absence.controller.js';
 
 const router = express.Router();
 
@@ -146,5 +146,26 @@ router.get('/:id/detail', getAbsenceDetail);
  *         description: Absence not found
  */
 router.delete('/:id/delete', deleteAbsence);
+/**
+ * @openapi
+ * /absences/{id}:
+ *   delete:
+ *     tags: [Absence]
+ *     summary: Delete absence by ID
+ *     description: Deletes the absence entry by ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the absence to delete
+ *     responses:
+ *       200:
+ *         description: Absence deleted successfully
+ *       404:
+ *         description: Absence not found
+ */
+router.get('/getabsencebymonth', getAbsenceListByMonth);
 
 export default router;

@@ -35,7 +35,7 @@ const absenceSchema = new Schema(
             // required: true,
             trim: true
         },
-        dayOfAbsence: {
+        reasonOfAbsence: {
             type: String,
             required: true
         },

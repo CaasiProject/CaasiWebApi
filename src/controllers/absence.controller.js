@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Absence } from "../models/absence.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Client } from "../models/client.model.js";
 
 // Create Absence
 const createAbsence = asyncHandler(async (req, res) => {
@@ -57,5 +58,42 @@ const deleteAbsence = asyncHandler(async (req, res) => {
     }
     res.status(200).json(new ApiResponse(200, {}, "Absence deleted successfully"));
 });
+const getAbsenceListByMonth = asyncHandler(async (req, res) => {
+    const { userId, month, year } = req.query;
+    // Parse month and year as integers, or use the current month/year as default
+    const selectedMonth = parseInt(month, 10) || new Date().getMonth() + 1;
+    const selectedYear = parseInt(year, 10) || new Date().getFullYear();
 
-export { createAbsence, updateAbsence, listAbsences, getAbsenceDetail, deleteAbsence };
+    // Calculate the start date as the first day of the selected month
+    const startDate = new Date(selectedYear, selectedMonth - 1, 1);
+
+    // Calculate the end date as the last day of the selected month
+    const endDate = new Date(selectedYear, selectedMonth, 0);
+    // Check if the requester is an admin
+    const isAdmin = await Client.findById({ _id: userId });
+    let absences = []
+    if (isAdmin) {
+        // If the requester is an admin, return all absences
+        absences = await Absence.find({ status: "pending" }).select('_id name lastName createdAt reasonOfAbsence');
+        return res.status(200).json(new ApiResponse(200, absences, "All absences retrieved successfully"));
+    } else {
+        // Fetch activities for the user within the date range
+        absences = await Absence.find({
+            _id: userId,
+            createdAt: {
+                $gte: startDate,
+                $lt: endDate
+            }
+        }).select('_id name lastName createdAt reasonOfAbsence');
+        // Return the activities for the specific user
+        res.status(200).json(new ApiResponse(200, absences, "absences details retrieved successfully"));
+    }
+
+    // Handle case where no activities are found for the user
+    if (!absences || absences.length === 0) {
+        return res.status(200).json(new ApiResponse(200, [], "No absences found for the given user and month"));
+    }
+
+
+});
+export { createAbsence, updateAbsence, listAbsences, getAbsenceDetail, deleteAbsence, getAbsenceListByMonth };
