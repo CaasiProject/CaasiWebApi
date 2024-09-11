@@ -1,5 +1,5 @@
 import express from 'express';
-import { createExpense, getExpenseDetails, getExpenses, updateExpense, deleteExpense,updateExpenseStatus, getUserExpenseDetails } from '../controllers/expense.controller.js';
+import { createExpense, getExpenseDetails, getExpenses, updateExpense, deleteExpense, updateExpenseStatus, getUserExpenseDetails, getExpenseListByMonth } from '../controllers/expense.controller.js';
 
 const router = express.Router();
 
@@ -161,6 +161,36 @@ router.patch('/update/:id', updateExpense);
  *         description: Expense not found
  */
 router.delete('/expenses/:id', deleteExpense);
+/**
+ * @openapi
+ * /expense/expenses:
+ *   get:
+ *     tags: [Expense]
+ *     summary: Get all expenses
+ *     description: Retrieves a list of all expenses with optional filters.
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filter by expense category
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter by start date
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter by end date
+ *     responses:
+ *       200:
+ *         description: Expenses retrieved successfully
+ */
+router.get('/getexpensebymonth', getExpenseListByMonth);
 
 router.post('/:id/status', updateExpenseStatus);
 
