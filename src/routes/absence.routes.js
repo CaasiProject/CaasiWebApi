@@ -1,6 +1,7 @@
 import express from 'express';
 import { createAbsence, updateAbsence, listAbsences, getAbsenceDetail, deleteAbsence, getAbsenceListByMonth } from '../controllers/absence.controller.js';
 
+
 const router = express.Router();
 
 /**
